@@ -1,10 +1,16 @@
 var ffmpeg = require('fluent-ffmpeg');
 var request = require('request');
 var moment = require('moment');
-var mailgun = require('mailgun-js')({
-    apiKey: process.env.MAILGUN_API_KEY,
-    domain: process.env.MAILGUN_DOMAIN
-});
+var fs = require('fs');
+var Flickr = require("flickrapi"),
+    flickrOptions = {
+      api_key: process.env.FLICKR_API_KEY,
+      secret: process.env.FLICKR_API_SECRET,
+      user_id: process.env.FLICKR_USER_ID,
+      access_token: process.env.FLICKR_ACCESS_TOKEN,
+      access_token_secret: process.env.FLICKR_ACCESS_TOKEN_SECRET,
+      permissions: 'write'
+    };
 
 var streamBuffers = require("stream-buffers");
 var myWritableStreamBuffer = new streamBuffers.WritableStreamBuffer();
@@ -48,26 +54,49 @@ ffmpeg()
     var filename = 'Duet_' + date;
     var filepath = filename + '.jpg';
 
-    var attachment = new mailgun.Attachment({
-      filename: filepath,
-      data: myWritableStreamBuffer.getContents()
-    });
+    var fileContents = myWritableStreamBuffer.getContents();
 
-    var data = {
-      from: process.env.UPLOAD_MAIL_ADDRESS_FROM,
-      to: process.env.UPLOAD_MAIL_ADDRESS,
-      subject: filename,
-      text: 'Image for ' + filename,
-      attachment: attachment
-    };
+    var fileReadStream = new streamBuffers.ReadableStreamBuffer();
+    fileReadStream.put(fileContents);
 
-    mailgun.messages().send(data, function (error, body) {
-      if (error) {
-        throw error;
-      }
-      console.log(body);
+    var localfile = fs.createWriteStream(filepath);
 
-      process.exit();
+    fileReadStream.pipe(localfile);
+
+    Flickr.authenticate(flickrOptions, function(error, flickr) {
+
+      // we can now use "flickr" as our API object
+      var uploadOptions = {
+        photo: {
+          title: filename,
+          tags: [],
+          photo: filepath
+        }
+      };
+
+      Flickr.upload(uploadOptions, flickr.options, function(err, result) {
+        if(err) {
+          throw err;
+        }
+
+        console.log('result', result);
+
+        var groupsPoolsAddOptions = {
+            user_id: process.env.FLICKR_USER_ID,
+            photo_id: result[0],
+            group_id: process.env.FLICKR_GROUP_ID,
+            format: 'json'
+        };
+
+        flickr.groups.pools.add(groupsPoolsAddOptions, function(err, result) {
+          if(err) {
+            throw err;
+          }
+          console.log('result', result);
+
+          process.exit();
+        });
+      });
     });
 
   })
