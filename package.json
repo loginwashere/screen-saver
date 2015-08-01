@@ -1,0 +1,32 @@
+{
+  "name": "screen-saver",
+  "version": "0.0.1",
+  "description": "Save site screenshots",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/loginwashere/screen-saver.git"
+  },
+  "keywords": [
+    "screenshot"
+  ],
+  "author": "Dmitriy Savchenko <login.was.here@gmail.com> (http://loginwashere.pp.ua)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/loginwashere/screen-saver/issues"
+  },
+  "homepage": "https://github.com/loginwashere/screen-saver#readme",
+  "dependencies": {
+    "flickrapi": "^0.3.35",
+    "fluent-ffmpeg": "^2.0.1",
+    "phantom": "^0.7.2",
+    "request": "^2.60.0"
+  },
+  "engines": {
+    "node": "0.12"
+  }
+}
