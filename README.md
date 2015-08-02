@@ -22,7 +22,7 @@ To apply setting from ```.bin/.env``` run command ```source .bin/.env```.
 
 To install app dependencies run ```npm install```.
 
-After this you can run app using command ```node ffmpeg.js```.
+After this you can run app using command ```node index.js```.
 
 When you run it first time it will open browser and request permission from flickr.
 When you agree you will be asked to copy code to cli.
