@@ -2,29 +2,29 @@ var ffmpeg = require('fluent-ffmpeg');
 var request = require('request');
 var moment = require('moment');
 var fs = require('fs');
-var Flickr = require("flickrapi"),
-    flickrOptions = {
-      api_key: process.env.FLICKR_API_KEY,
-      secret: process.env.FLICKR_API_SECRET,
-      user_id: process.env.FLICKR_USER_ID,
-      access_token: process.env.FLICKR_ACCESS_TOKEN,
-      access_token_secret: process.env.FLICKR_ACCESS_TOKEN_SECRET,
-      permissions: 'write'
-    };
+var Flickr = require("flickrapi");
+var flickrOptions = {
+  api_key: process.env.FLICKR_API_KEY,
+  secret: process.env.FLICKR_API_SECRET,
+  user_id: process.env.FLICKR_USER_ID,
+  access_token: process.env.FLICKR_ACCESS_TOKEN,
+  access_token_secret: process.env.FLICKR_ACCESS_TOKEN_SECRET,
+  permissions: 'write'
+};
 
 var streamBuffers = require("stream-buffers");
 var myWritableStreamBuffer = new streamBuffers.WritableStreamBuffer();
 
 var readStream = request(process.env.VIDEO_STREAM_URL)
-    .on('error', function(err) {
-        console.log(err);
-    })
-    .on('start', function(commandLine) {
-        console.log('Spawned Ffmpeg with command: ' + commandLine);
-      })
-    .on('end', function() {
-        console.log('Processing finished !');
-    });
+  .on('error', function(err) {
+    console.log(err);
+  })
+  .on('start', function(commandLine) {
+    console.log('Spawned Ffmpeg with command: ' + commandLine);
+  })
+  .on('end', function() {
+    console.log('Processing finished !');
+  });
 
 ffmpeg()
   .input(readStream)
@@ -52,7 +52,7 @@ ffmpeg()
 
     var date = moment().toISOString();
     var filename = 'Duet_' + date;
-    var filepath = filename + '.jpg';
+    var filepath = 'photos/' + filename + '.jpg';
 
     var fileContents = myWritableStreamBuffer.getContents();
 
